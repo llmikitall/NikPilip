@@ -52,8 +52,7 @@ public class ApplicationService {
         return products;
     }
 
-    /* getTopPopularProducts - Количество самых популярных Product, заказанные клиентами (первые limit).
-                Не считаю "количество" продуктов в заказе OrderProduct, так как я роллы продаю поштучными...*/
+    // getTopPopularProducts - Количество самых популярных Product, заказанные клиентами (первые limit).
     public List<Product> getTopPopularProducts(Integer limit){
         // Альтернатива limit в SQL
         Pageable pageable = PageRequest.of(0, limit);
