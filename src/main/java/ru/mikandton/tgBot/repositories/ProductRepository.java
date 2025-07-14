@@ -14,10 +14,11 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
 
     @Query("""
-            SELECT p
+            SELECT product
             FROM OrderProduct op
-            JOIN op.product p
-            GROUP BY p
+            JOIN op.product
+            GROUP BY product
+            HAVING COUNT(op.clientOrder) > 1
             ORDER BY COUNT(op.clientOrder) DESC
             """)
     List<Product> findPopularProducts(Pageable pageable);

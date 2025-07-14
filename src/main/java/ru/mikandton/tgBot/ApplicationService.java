@@ -45,10 +45,8 @@ public class ApplicationService {
         for (ClientOrder clientOrder : clientOrders) {
             List<OrderProduct> orderProducts = orderProductRepository.findByClientOrderId(clientOrder.getId());
             for (OrderProduct orderProduct : orderProducts){
-                /* Проверка на уникальность. Предположительно именно её не пропускает jenkins.
-                        В тестах я использую случай, если вдруг я сделал два заказа с одинаковым продуктом. */
-                // if(!products.contains(orderProduct.getProduct()))
-                products.add(orderProduct.getProduct());
+                if(!products.contains(orderProduct.getProduct()))
+                    products.add(orderProduct.getProduct());
             }
         }
         return products;
