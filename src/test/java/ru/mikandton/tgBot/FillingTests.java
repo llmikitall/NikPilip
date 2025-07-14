@@ -98,18 +98,18 @@ public class FillingTests {
         saveOrderProduct(clientOrder1_1, products.get(5), 1);
 
         ClientOrder clientOrder1_2 = saveClientOrder(client1, 102, 640.00);
-        saveOrderProduct(clientOrder1_2, products.get(0), 2);
+        saveOrderProduct(clientOrder1_2, products.get(0), 1);
         saveOrderProduct(clientOrder1_2, products.get(5), 1);
 
         ClientOrder clientOrder2 = saveClientOrder(client2, 102, 850.00);
-        saveOrderProduct(clientOrder2, products.get(2), 3);
+        saveOrderProduct(clientOrder2, products.get(2), 1);
         saveOrderProduct(clientOrder2, products.get(4), 1);
         saveOrderProduct(clientOrder2, products.get(3), 1);
         saveOrderProduct(clientOrder1_2, products.get(5), 1);
 
         ClientOrder clientOrder3 = saveClientOrder(client3, 102, 2230.00);
         saveOrderProduct(clientOrder3, products.get(0), 1);
-        saveOrderProduct(clientOrder3, products.get(1), 10);
+        saveOrderProduct(clientOrder3, products.get(1), 1);
         saveOrderProduct(clientOrder3, products.get(4), 1);
         saveOrderProduct(clientOrder1_2, products.get(5), 1);
 
