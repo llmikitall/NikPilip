@@ -31,11 +31,8 @@ public class FillingTests {
     @Test
     void createCategoryAndProducts(){
 
-
         List<Product> products = new ArrayList<>();
-        // parent - объект-родитель для подкатегорий
         Category parent;
-        // category - объект, для создания продуктов с категорией
         Category category;
 
         category = saveCategory("Пицца", null);
@@ -103,11 +100,12 @@ public class FillingTests {
         saveOrderProduct(clientOrder1_2, products.get(0), 1);
         saveOrderProduct(clientOrder1_2, products.get(5), 1);
 
-        ClientOrder clientOrder2 = saveClientOrder(client1, 102, 850.00);
+        ClientOrder clientOrder2 = saveClientOrder(client2, 102, 850.00);
         saveOrderProduct(clientOrder2, products.get(2), 1);
+        saveOrderProduct(clientOrder2, products.get(4), 1);
         saveOrderProduct(clientOrder2, products.get(3), 1);
 
-        ClientOrder clientOrder3 = saveClientOrder(client1, 102, 2230.00);
+        ClientOrder clientOrder3 = saveClientOrder(client3, 102, 2230.00);
         saveOrderProduct(clientOrder3, products.get(0), 1);
         saveOrderProduct(clientOrder3, products.get(1), 10);
         saveOrderProduct(clientOrder3, products.get(4), 1);
