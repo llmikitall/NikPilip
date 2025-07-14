@@ -18,7 +18,7 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
             FROM OrderProduct op
             JOIN op.product p
             GROUP BY p
-            ORDER BY COUNT(op.clientOrder) DESC
+            ORDER BY COUNT(op.countProduct) DESC
             """)
     List<Product> findPopularProducts(Pageable pageable);
 }

@@ -105,13 +105,13 @@ public class FillingTests {
         saveOrderProduct(clientOrder2, products.get(2), 1);
         saveOrderProduct(clientOrder2, products.get(4), 1);
         saveOrderProduct(clientOrder2, products.get(3), 1);
-        saveOrderProduct(clientOrder1_2, products.get(5), 1);
+        saveOrderProduct(clientOrder2, products.get(5), 1);
 
         ClientOrder clientOrder3 = saveClientOrder(client3, 102, 2230.00);
         saveOrderProduct(clientOrder3, products.get(0), 1);
         saveOrderProduct(clientOrder3, products.get(1), 1);
         saveOrderProduct(clientOrder3, products.get(4), 1);
-        saveOrderProduct(clientOrder1_2, products.get(5), 1);
+        saveOrderProduct(clientOrder3, products.get(5), 1);
 
     }
 
