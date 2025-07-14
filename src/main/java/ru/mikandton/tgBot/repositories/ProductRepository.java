@@ -3,6 +3,7 @@ package ru.mikandton.tgBot.repositories;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import ru.mikandton.tgBot.entities.Product;
 
@@ -12,6 +13,14 @@ import java.util.List;
 public interface ProductRepository extends JpaRepository<Product, Long> {
     List<Product> findByCategoryId(Long categoryId);
 
+    @Query("""
+            SELECT p
+            FROM OrderProduct op
+            JOIN op.clientOrder co
+            JOIN op.product p
+            WHERE co.client.id = :id
+            """)
+    List<Product> findByClientId(@Param("id") Long id);
 
     @Query("""
             SELECT p

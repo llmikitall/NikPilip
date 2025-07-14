@@ -40,16 +40,7 @@ public class ApplicationService {
 
     // getClientProduct - Список Product заказанных клиентом.
     public List<Product> getClientProduct(Long id){
-        List <ClientOrder> clientOrders = clientOrderRepository.findByClientId(id);
-        List <Product> products = new ArrayList<>();
-        for (ClientOrder clientOrder : clientOrders) {
-            List<OrderProduct> orderProducts = orderProductRepository.findByClientOrderId(clientOrder.getId());
-            for (OrderProduct orderProduct : orderProducts){
-                if(!products.contains(orderProduct.getProduct()))
-                    products.add(orderProduct.getProduct());
-            }
-        }
-        return products;
+        return productRepository.findByClientId(id);
     }
 
     // getTopPopularProducts - Количество самых популярных Product, заказанные клиентами (первые limit).
