@@ -86,6 +86,7 @@ public class FillingTests {
         saveProduct("Минералка", category, "Без газа/газированная", 120.00);
         saveProduct("Молочный коктейль", category, "Ваниль, шоколад, клубника", 100.00);
 
+        /*
         Client client1 = saveClient(1L,"Пилипенко Никита Михайлович",
                 "ул. Великая, д. 21, кв. 1, г. Севастополь", "+79784571049");
         Client client2 = saveClient(2L,"Кузнецов Владислав Вячеславович",
@@ -112,7 +113,7 @@ public class FillingTests {
         saveOrderProduct(clientOrder3, products.get(1), 1);
         saveOrderProduct(clientOrder3, products.get(4), 1);
         saveOrderProduct(clientOrder3, products.get(5), 1);
-
+        */
     }
 
 
