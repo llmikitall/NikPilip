@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import ru.mikandton.tgBot.entities.*;
 import ru.mikandton.tgBot.services.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -61,6 +62,8 @@ public class TelegramBotConnection {
             // Поиск новейшего заказа клиентом (Client.id + status = 0)
             Client client = clientService.getClientByExternalId(update.callbackQuery().from().id());
             ClientOrder clientOrder = clientOrderService.getMaxClientOrderByClientId(client.getId());
+            if(clientOrder == null)
+                return;
 
             // Поиск существующего OrderProduct на основе ClientOrder и Product
             OrderProduct orderProduct = orderProductService.findOrderProductByClientOrderIdAndProductId(
@@ -98,15 +101,28 @@ public class TelegramBotConnection {
         SendMessage message;
         // Величайший костыль... Нужны хендлеры на считывание команд...
         if(update.message().text().contains("/setaddress")){
+            String text;
             String address = update.message().text().replace("/setaddress ", "");
-            client.setAddress(address);
-            clientService.saveClient(client);
-            message = new SendMessage(client.getExternalId(), "Адрес успешно заменён!");
+            if (address.length() > 400 || address.length() < 25 || address.contains("/setaddress"))
+                text = "Некорректный адрес! Пример ввода: /setaddress г. Ялта, ул. Гагарина, д.29, кв.12";
+            else {
+                client.setAddress(address);
+                clientService.saveClient(client);
+                text = "Адрес успешно заменён!";
+            }
+            message = new SendMessage(client.getExternalId(), text);
         } else if (update.message().text().contains("/setphone")) {
+            String text;
             String phone = update.message().text().replace("/setphone ", "");
-            client.setPhoneNumber(phone);
-            clientService.saveClient(client);
-            message = new SendMessage(client.getExternalId(), "Номер телефона успешно заменён!");
+            if(phone.length() != 15 || phone.contains("/setphone")){
+                text = "Некорректный номер! Пример ввода: /setphone +7(978)457-1049";
+            }
+            else{
+                client.setPhoneNumber(phone);
+                clientService.saveClient(client);
+                text = "Номер телефона успешно заменён!";
+            }
+            message = new SendMessage(client.getExternalId(), text);
         }
         else {
             // Почему Switch, а не if? Для эдакой расширяемости... И так понятнее...
@@ -137,12 +153,19 @@ public class TelegramBotConnection {
         List <Category> categories = categoryService.getCategoryByParent(parent);
 
         ReplyKeyboardMarkup keyboard = new ReplyKeyboardMarkup("[Оформить заказ]");
-
+        List<KeyboardButton> buttons = new ArrayList<>();
         // Есть хотя бы одна категория?
         if (!categories.isEmpty()){
             // Да! Тогда создаём кнопки категорий.
-            for (Category category: categories)
-                keyboard.addRow(new KeyboardButton(category.getName()));
+            for (Category category: categories){
+                buttons.add(new KeyboardButton(category.getName()));
+                if (buttons.size() == 2){
+                    keyboard.addRow(buttons.toArray(KeyboardButton[]::new));
+                    buttons.clear();
+                }
+            }
+            if (buttons.size() == 1)
+                keyboard.addRow(buttons.toArray(KeyboardButton[]::new));
             // Если parent == null (то есть высшая категория), то не добавляем кнопку "[Назад в главное меню]"
             if (parent != null)
                 keyboard.addRow("[Назад в главное меню]");
@@ -183,9 +206,11 @@ public class TelegramBotConnection {
         List<OrderProduct> orderProducts = orderProductService.findOrderProductsByClientOrder(clientOrder);
         StringBuilder text = new StringBuilder(String.format("[ID заказа: %s]\n", clientOrder.getId()));
         double total = 0.0;
+        int index = 1;
         for (OrderProduct orderProduct: orderProducts){
             Product product = orderProduct.getProduct();
-            text.append(String.format("\n   - %s: [Кол-во: %s] [Стоимость: %.2f]\n",
+            text.append(String.format("\n   %d) %s: [Кол-во: %s] [Стоимость: %.2f]\n",
+                    index++,
                     product.getName(),
                     orderProduct.getCountProduct(),
                     orderProduct.getCountProduct()*product.getPrice()));
