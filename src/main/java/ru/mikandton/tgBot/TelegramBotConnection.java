@@ -31,13 +31,15 @@ public class TelegramBotConnection {
     private final ProductService productService;
     private final ClientOrderService clientOrderService;
     private final OrderProductService orderProductService;
+    private final OpenAiService openAiService;
 
-    public TelegramBotConnection(ClientService clientService, CategoryService categoryService, ProductService productService, ClientOrderService clientOrderService, OrderProductService orderProductService) {
+    public TelegramBotConnection(ClientService clientService, CategoryService categoryService, ProductService productService, ClientOrderService clientOrderService, OrderProductService orderProductService, OpenAiService openAiService) {
         this.clientService = clientService;
         this.categoryService = categoryService;
         this.productService = productService;
         this.clientOrderService = clientOrderService;
         this.orderProductService = orderProductService;
+        this.openAiService = openAiService;
     }
 
     @PostConstruct
@@ -140,8 +142,15 @@ public class TelegramBotConnection {
                     if (parent.isPresent())
                         message = createButton(parent.get(), client.getExternalId(), String.format("Меню [%s]:", parent.get().getName()));
                         // Любые другие сообщения, не связанные с командами и кнопками
-                    else
-                        message = new SendMessage(client.getExternalId(), "Нажимайте лучше на кнопочки...");
+                    else {
+                        // Подключенный AI
+                        if (update.message().text() != null){
+                            String text = openAiService.processMessage(client.getExternalId(), update.message().text());
+                            message = new SendMessage(client.getExternalId(), text);
+                        }
+                        else
+                            message = new SendMessage(client.getExternalId(), "Ну это перебор..!");
+                    }
                 }
             }
         }

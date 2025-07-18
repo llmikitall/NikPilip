@@ -1,4 +1,4 @@
-package ru.mikandton.tgBot;
+package ru.mikandton.tgBot.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -6,13 +6,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.mikandton.tgBot.entities.ClientOrder;
-import ru.mikandton.tgBot.entities.OrderProduct;
 import ru.mikandton.tgBot.entities.Product;
 import ru.mikandton.tgBot.repositories.ClientOrderRepository;
 import ru.mikandton.tgBot.repositories.OrderProductRepository;
 import ru.mikandton.tgBot.repositories.ProductRepository;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
