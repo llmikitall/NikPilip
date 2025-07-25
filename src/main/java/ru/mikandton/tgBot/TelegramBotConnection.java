@@ -12,6 +12,7 @@ import com.pengrad.telegrambot.model.request.ReplyKeyboardMarkup;
 import com.pengrad.telegrambot.request.AnswerCallbackQuery;
 import com.pengrad.telegrambot.request.SendMessage;
 import jakarta.annotation.PostConstruct;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import ru.mikandton.tgBot.entities.*;
 import ru.mikandton.tgBot.services.*;
@@ -23,7 +24,11 @@ import java.util.Optional;
 
 @Service
 public class TelegramBotConnection {
-    private final TelegramBot bot = new TelegramBot("7578084200:AAG8rp-8D_StzPC4GqGk5whl2CLPQmcrbzE");
+
+    @Value("${BOT_TOKEN}")
+    private String BOT_TOKEN;
+
+    private TelegramBot bot;
 
     // Не знаю куда бы запихать такой огромный кусок кода... Help...
     private final ClientService clientService;
@@ -44,6 +49,7 @@ public class TelegramBotConnection {
 
     @PostConstruct
     public void start(){
+        bot = new TelegramBot(BOT_TOKEN);
         bot.setUpdatesListener(updates -> {
             updates.forEach(this::processUpdate);
             return UpdatesListener.CONFIRMED_UPDATES_ALL;

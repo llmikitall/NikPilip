@@ -13,11 +13,13 @@ import ru.mikandton.tgBot.repositories.*;
 @Transactional
 public class InitDataBase {
 
-    @Autowired
-    private CategoryRepository categoryRepository;
+    private final CategoryRepository categoryRepository;
+    private final ProductRepository productRepository;
 
-    @Autowired
-    private ProductRepository productRepository;
+    public InitDataBase(CategoryRepository categoryRepository, ProductRepository productRepository) {
+        this.categoryRepository = categoryRepository;
+        this.productRepository = productRepository;
+    }
 
 
     @PostConstruct

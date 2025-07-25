@@ -11,13 +11,21 @@ import ru.mikandton.tgBot.repositories.ClientOrderRepository;
 @Transactional
 public class ClientOrderService {
 
-    @Autowired
-    ClientOrderRepository clientOrderRepository;
+    private final ClientOrderRepository clientOrderRepository;
+
+    public ClientOrderService(ClientOrderRepository clientOrderRepository) {
+        this.clientOrderRepository = clientOrderRepository;
+    }
 
     public void saveClientOrder(ClientOrder clientOrder){
         clientOrderRepository.save(clientOrder);
     }
 
+    /**
+     * Получение актуального ClientOrder клиента Client.id
+     * @param id Client.id
+     * @return Самый последний ClientOrder
+     */
     public ClientOrder getMaxClientOrderByClientId(Long id){
         return clientOrderRepository.findMaxClientOrderByClientId(id);
     }

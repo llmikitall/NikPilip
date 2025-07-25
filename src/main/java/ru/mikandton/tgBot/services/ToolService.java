@@ -1,71 +1,83 @@
 package ru.mikandton.tgBot.services;
 
 import org.springframework.ai.tool.annotation.Tool;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 import ru.mikandton.tgBot.entities.*;
 import ru.mikandton.tgBot.repositories.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
+@Scope("prototype")
 public class ToolService {
 
-    @Autowired
-    private ClientOrderRepository clientOrderRepository;
+    private final ClientOrderRepository clientOrderRepository;
+    private final OrderProductRepository orderProductRepository;
+    private final ProductRepository productRepository;
+    private final CategoryRepository categoryRepository;
+    private final ClientRepository clientRepository;
 
-    @Autowired
-    private OrderProductRepository orderProductRepository;
-
-    @Autowired
-    private ProductRepository productRepository;
-
-    @Autowired
-    private CategoryRepository categoryRepository;
-
-    @Autowired
-    private ClientRepository clientRepository;
-
-
-    // Для каждого потока своя переменная (Не без помощи интернета...)
-    private final ThreadLocal<Long> currentUserId = new ThreadLocal<>();
-
-    public void setCurrentUserId(Long userId){
-        currentUserId.set(userId);
-    }
-    public void clear(){
-        currentUserId.remove();
+    public ToolService(ClientOrderRepository clientOrderRepository, OrderProductRepository orderProductRepository, ProductRepository productRepository, CategoryRepository categoryRepository, ClientRepository clientRepository) {
+        this.clientOrderRepository = clientOrderRepository;
+        this.orderProductRepository = orderProductRepository;
+        this.productRepository = productRepository;
+        this.categoryRepository = categoryRepository;
+        this.clientRepository = clientRepository;
     }
 
+    private Long userId;
 
+    public void setUserId(Long userId){
+        this.userId = userId;
+    }
+
+    /**
+     * Ищет Product с указанным названием.
+     * @param nameProduct название продукта
+     * @return Product
+     */
     @Tool(name="searchProductByName", description = "Ищет продукт по названию среди всех продуктов")
     public Product searchProductByName(String nameProduct){
         return productRepository.findByName(nameProduct);
     }
 
-
+    /**
+     * Ищет все Product в базе данных.
+     * @return List[Product]
+     */
     @Tool(name="searchAllProduct", description = "Ищет все возможные продукты")
     public List<Product> searchAllProduct(){
         return productRepository.findAll();
     }
 
-
+    /**
+     * Ищет все Category в базе данных.
+     * @return List[Category]
+     */
     @Tool(name="searchAllCategory", description = "Ищет все категории")
     public List<Category> searchAllCategory(){
         return categoryRepository.findAll();
     }
 
-
+    /**
+     * Ищет все Product в указанной категории в базе данных.
+     * @param nameCategory имя категории;
+     * @return List[Product]
+     */
     @Tool(name="searchAllProductByCategory", description = "Ищет все возможные продукты выбранной категории")
     public List<Product> searchAllProductByCategory(String nameCategory){
         return productRepository.findByCategoryName(nameCategory);
     }
 
-
+    /**
+     * Добавляет количество продуктов в заказ (OrderProduct), если заказ существовал, иначе - создаёт новый.
+     * @param name название продукта;
+     * @param countProduct количество продуктов;
+     * @return String
+     */
     @Tool(name="addProductOrder", description = "Добавляет продукт и их количество в заказ")
     public String addProductOrder(String name, int countProduct){
-        Long userId = currentUserId.get();
 
         Product product = productRepository.findByName(name);
         if (product == null) {
@@ -95,12 +107,13 @@ public class ToolService {
         return "Заказ успешно добавлен!";
     }
 
-
-
+    /**
+     * Считает стоимость всех OrderProduct, привязанных к текущему ClientOrder.
+     * Меняет статус на 1 и создаёт новый ClientOrder со статусом 0.
+     * @return String
+     */
     @Tool(name = "placeClientOrderAi", description = "Оформление заказа пользователя")
     public String placeClientOrderAi(){
-
-        Long userId = currentUserId.get();
 
         Client client = clientRepository.findByExternalId(userId);
         StringBuilder text;
@@ -148,20 +161,24 @@ public class ToolService {
         return text.toString();
     }
 
-
+    /**
+     * Ищет все OrderProduct привязанные к текущему ClientOrder.
+     * @return List[OrderProduct]
+     */
     @Tool(name = "orderProductClient", description = "Список продуктов в заказе")
     public List<OrderProduct> orderProductClient(){
-        Long userId = currentUserId.get();
         Client client = clientRepository.findByExternalId(userId);
         ClientOrder clientOrder = clientOrderRepository.findMaxClientOrderByClientId(client.getId());
 
         return orderProductRepository.findByClientOrder(clientOrder);
     }
 
-
+    /**
+     * Изменяет address Client в базе данных.
+     * @return String
+     */
     @Tool(name="addAddress", description = "Сохраняет адрес клиента")
     public String addAddress(String address){
-        Long userId = currentUserId.get();
 
         Client client = clientRepository.findByExternalId(userId);
 
@@ -176,9 +193,12 @@ public class ToolService {
         return text;
     }
 
+    /**
+     * Изменяет phoneNumber Client в базе данных.
+     * @return String
+     */
     @Tool(name="addPhone", description = "Сохраняет номер телефона клиента")
     public String addPhone(String phone){
-        Long userId = currentUserId.get();
 
         Client client = clientRepository.findByExternalId(userId);
 
@@ -193,7 +213,4 @@ public class ToolService {
         }
         return text;
     }
-
-
-
 }
