@@ -11,7 +11,10 @@ import java.util.List;
 
 @RepositoryRestResource (collectionResourceRel = "products", path = "products")
 public interface ProductRepository extends JpaRepository<Product, Long> {
+
     List<Product> findByCategoryId(Long categoryId);
+
+    List<Product> findByCategoryName(String name);
 
     @Query("""
             SELECT p
@@ -30,4 +33,6 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
             ORDER BY SUM(op.countProduct) DESC
             """)
     List<Product> findPopularProducts(Pageable pageable);
+
+    Product findByName(String name);
 }

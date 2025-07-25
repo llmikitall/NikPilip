@@ -13,13 +13,26 @@ import java.util.Optional;
 @Transactional
 public class ProductService {
 
-    @Autowired
-    private ProductRepository productRepository;
+    private final ProductRepository productRepository;
 
+    public ProductService(ProductRepository productRepository) {
+        this.productRepository = productRepository;
+    }
+
+    /**
+     * Поиск всех Product указанной Category.id
+     * @param categoryId Category.id
+     * @return List[Product]
+     */
     public List<Product> getProductsByParent(Long categoryId){
         return productRepository.findByCategoryId(categoryId);
     }
 
+    /**
+     * Посик Product по его id
+     * @param id Product.id
+     * @return Optional[Product]
+     */
     public Optional<Product> getProductById(Long id){
         return productRepository.findById(id);
     }

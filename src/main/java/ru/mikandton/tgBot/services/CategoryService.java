@@ -12,13 +12,26 @@ import java.util.List;
 @Service
 @Transactional
 public class CategoryService {
-    @Autowired
-    private CategoryRepository categoryRepository;
 
+    private final CategoryRepository categoryRepository;
+
+    public CategoryService(CategoryRepository categoryRepository) {
+        this.categoryRepository = categoryRepository;
+    }
+
+    /**
+     * Получение всех Category которые принадлежат к категории parent
+     * @param parent Category
+     * @return List[Category]
+     */
     public List<Category> getCategoryByParent(Category parent){
         return categoryRepository.findByParent(parent);
     }
 
+    /**
+     * Получение всех Category
+     * @return List[Category]
+     */
     public List<Category> getAllCategory(){
         return categoryRepository.findAll();
     }

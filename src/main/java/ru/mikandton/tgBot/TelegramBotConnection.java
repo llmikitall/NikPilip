@@ -12,6 +12,7 @@ import com.pengrad.telegrambot.model.request.ReplyKeyboardMarkup;
 import com.pengrad.telegrambot.request.AnswerCallbackQuery;
 import com.pengrad.telegrambot.request.SendMessage;
 import jakarta.annotation.PostConstruct;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import ru.mikandton.tgBot.entities.*;
 import ru.mikandton.tgBot.services.*;
@@ -23,7 +24,11 @@ import java.util.Optional;
 
 @Service
 public class TelegramBotConnection {
-    private final TelegramBot bot = new TelegramBot("7578084200:AAG8rp-8D_StzPC4GqGk5whl2CLPQmcrbzE");
+
+    @Value("${BOT_TOKEN}")
+    private String BOT_TOKEN;
+
+    private TelegramBot bot;
 
     // Не знаю куда бы запихать такой огромный кусок кода... Help...
     private final ClientService clientService;
@@ -31,17 +36,20 @@ public class TelegramBotConnection {
     private final ProductService productService;
     private final ClientOrderService clientOrderService;
     private final OrderProductService orderProductService;
+    private final OpenAiService openAiService;
 
-    public TelegramBotConnection(ClientService clientService, CategoryService categoryService, ProductService productService, ClientOrderService clientOrderService, OrderProductService orderProductService) {
+    public TelegramBotConnection(ClientService clientService, CategoryService categoryService, ProductService productService, ClientOrderService clientOrderService, OrderProductService orderProductService, OpenAiService openAiService) {
         this.clientService = clientService;
         this.categoryService = categoryService;
         this.productService = productService;
         this.clientOrderService = clientOrderService;
         this.orderProductService = orderProductService;
+        this.openAiService = openAiService;
     }
 
     @PostConstruct
     public void start(){
+        bot = new TelegramBot(BOT_TOKEN);
         bot.setUpdatesListener(updates -> {
             updates.forEach(this::processUpdate);
             return UpdatesListener.CONFIRMED_UPDATES_ALL;
@@ -140,8 +148,15 @@ public class TelegramBotConnection {
                     if (parent.isPresent())
                         message = createButton(parent.get(), client.getExternalId(), String.format("Меню [%s]:", parent.get().getName()));
                         // Любые другие сообщения, не связанные с командами и кнопками
-                    else
-                        message = new SendMessage(client.getExternalId(), "Нажимайте лучше на кнопочки...");
+                    else {
+                        // Подключенный AI
+                        if (update.message().text() != null){
+                            String text = openAiService.processMessage(client.getExternalId(), update.message().text());
+                            message = new SendMessage(client.getExternalId(), text);
+                        }
+                        else
+                            message = new SendMessage(client.getExternalId(), "Ну это перебор..!");
+                    }
                 }
             }
         }

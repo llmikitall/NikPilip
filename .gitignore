@@ -36,3 +36,4 @@ build/
 *.cmd
 .mvn/
 mvnw
+.env
